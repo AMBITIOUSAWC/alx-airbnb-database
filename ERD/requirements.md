@@ -54,27 +54,20 @@
   * message_body: TEXT, NOT NULL 
   * sent_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP 
 
- **Relationships and Their Cardinalities**
-  * The relationships between entities are defined by Foreign Keys, indicating how tables are linked.
-User to Property:
+ ## Relationships and Their Cardinalities
+The relationships between entities are defined by Foreign Keys, indicating how tables are linked.
 
-Relationship: A User can be a host of multiple Property listings. Each Property is hosted by exactly one User.
+* **User to Property:**
+  * **Relationship:** A User can be a host of multiple Property listings. Each Property is hosted by exactly one User.
+  * **Cardinality:** One-to-Many (1:M)
+  * **Description:** Property.host_id references User.user_id. This indicates that a user acts as a host for properties.
 
-Cardinality: One-to-Many (1:M)
+* **User to Booking:**
+ * **Relationship:** A User can make multiple Bookings. Each Booking is made by exactly one User.
+ * **Cardinality:** One-to-Many (1:M)
+ * **Description:** Booking.user_id references User.user_id. This links a booking to the user who made it.
 
-
-Description: Property.host_id references User.user_id. This indicates that a user acts as a host for properties.
-
-User to Booking:
-
-Relationship: A User can make multiple Bookings. Each Booking is made by exactly one User.
-
-Cardinality: One-to-Many (1:M)
-
-
-Description: Booking.user_id references User.user_id. This links a booking to the user who made it.
-
-Property to Booking:
+ Property to Booking:
 
 Relationship: A Property can have multiple Bookings. Each Booking is for exactly one Property.
 
