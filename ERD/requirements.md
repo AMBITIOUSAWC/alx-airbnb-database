@@ -1,255 +1,139 @@
-<<<<<<< HEAD
-# Requirements for Airbnb Clone ER Diagram
-
-- The database must include at least 4 tables:
-  - Users
-  - Places
-  - Reviews
-  - Amenities
-
-- Each table must have a primary key
-- Users and Places must have a one-to-many relationship (a user can list multiple places)
-- Places and Reviews must have a one-to-many relationship (a place can have many reviews)
-- Many-to-many relationships must use an association table (e.g., place_amenity)
-- All foreign keys must be properly linked
-- ER diagram should be in PNG format and named airbnb_erd.png
-=======
-Database Normalization Analysis - AirBnB Schema
-Overview
-This document provides a comprehensive analysis of the AirBnB database schema's normalization, specifically ensuring compliance with Third Normal Form (3NF) principles. Each entity is reviewed for potential redundancies and normalization violations, followed by recommendations for optimization.
-
-Database Schema Review
-Current Schema Structure
-
-The AirBnB database comprises six core entities:
-
-User: Stores user details (guests, hosts, admins).
-
-Property: Manages rental property information.
-
-Booking: Handles reservation transactions.
-
-Payment: Records financial transactions.
-
-Review: Stores user feedback and ratings.
-
-Message: Facilitates communication between users.
-
-Normalization Analysis by Normal Form
-First Normal Form (1NF) Analysis
-Definition: Each column must contain atomic (indivisible) values, and each record must be unique.
-
-Current State: COMPLIANT
-
-All entities in the current schema meet 1NF requirements:
-* Atomic Values: All attributes hold single, indivisible values.
-* Unique Records: Each table utilizes a UUID primary key, guaranteeing unique records.
-* No Repeating Groups: No columns contain multiple values or array-like structures.
-
-Verification:
-* User table: Attributes such as first_name, last_name, and email are atomic.
-* Property table: All attributes are single-valued.
-* All other tables consistently adhere to this pattern.
-
-Second Normal Form (2NF) Analysis
-Definition: Must be in 1NF, and all non-key attributes must be fully functionally dependent on the entire primary key.
-
-Current State: COMPLIANT
-
-All entities satisfy 2NF requirements:
-* Single Primary Keys: All tables employ single-column UUIDs as primary keys.
-* No Partial Dependencies: The absence of composite primary keys inherently eliminates the possibility of partial dependencies.
-* Full Functional Dependency: All non-key attributes are entirely dependent on their respective primary keys.
-
-Verification:
-* No composite primary keys exist across any table.
-* All foreign keys correctly reference single-column primary keys.
-* Each attribute directly depends on its table's primary key.
-
-Third Normal Form (3NF) Analysis
-Definition: Must be in 2NF, and all non-key attributes must be directly dependent on the primary key (i.e., no transitive dependencies).
-
-Current State: MOSTLY COMPLIANT
-
-Compliant Areas:
-* User Table: No transitive dependencies identified.
-* Property Table: All attributes directly relate to the property itself.
-* Booking Table: All attributes are specific to the booking transaction.
-* Payment Table: All attributes directly relate to the payment.
-* Review Table: All attributes are specific to the review.
-* Message Table: All attributes directly relate to the message.
-
-Potential Optimization Areas:
-While the current schema technically achieves 3NF, opportunities exist for further normalization to enhance data integrity and minimize redundancy.
-
-Recommended Normalization Enhancements
-1. Location Normalization
-Current State:
-
-Property {
-    location: VARCHAR -- Contains city, state, country as single field
-}
-Recommended Enhancement:
-
--- New Location entity
-Location {
-    location_id: UUID (PK)
-    city: VARCHAR NOT NULL
-    state: VARCHAR NOT NULL
-    country: VARCHAR NOT NULL
-    postal_code: VARCHAR
-    created_at: TIMESTAMP
-}
--- Updated Property entity
-Property {
-    property_id: UUID (PK)
-    host_id: UUID (FK)
-    location_id: UUID (FK) -- References Location.location_id
-    name: VARCHAR NOT NULL
-    description: TEXT NOT NULL
-    price_per_night: DECIMAL NOT NULL
-    created_at: TIMESTAMP
-    updated_at: TIMESTAMP
-}
-Benefits:
-
-Eliminates data redundancy when multiple properties share the same location.
+# AirBnB Database Requirements
+## All Entities and Their Attributes
+### Here are the entities and their respective attributes as defined in the database specification:
 
-Facilitates more efficient location-based queries and analytics.
+**User** 
+  * user_id: Primary Key, UUID, Indexed 
+  * first_name: VARCHAR, NOT NULL 
+  * last_name: VARCHAR, NOT NULL 
+  * email: VARCHAR, UNIQUE, NOT NULL 
+  * password_hash: VARCHAR, NOT NULL 
+  * phone_number: VARCHAR, NULL 
+  * role: ENUM (guest, host, admin), NOT NULL 
+  * created_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP 
 
-Supports standardized location data formatting.
+ **Property**
+  * property_id: Primary Key, UUID, Indexed 
+  * host_id: Foreign Key, references User(user_id) 
+  * name: VARCHAR, NOT NULL 
+  * description: TEXT, NOT NULL 
+  * location: VARCHAR, NOT NULL 
+  * price per night: DECIMAL, NOT NULL 
+  * created_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP 
+  * updated_at: TIMESTAMP, ON UPDATE CURRENT_TIMESTAMP 
 
-Provides extensibility for future geographic features (e.g., coordinates, timezone).
+ **Booking** 
+  * booking_id: Primary Key, UUID, Indexed 
+  * property_id: Foreign Key, references Property(property_id) 
+  * user_id: Foreign Key, references User(user_id) 
+  * start_date: DATE, NOT NULL 
+  * end_date: DATE, NOT NULL 
+  * total_price: DECIMAL, NOT NULL 
+  * status: ENUM (pending, confirmed, canceled), NOT NULL 
+  * created_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP 
 
-2. Payment Method Normalization (Optional)
-Current State:
+ **Payment** 
+  * payment_id: Primary Key, UUID, Indexed 
+  * booking_id: Foreign Key, references Booking(booking_id) 
+  * amount: DECIMAL, NOT NULL 
+  * payment_date: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP 
+  * payment_method: ENUM (credit_card, paypal, stripe), NOT NULL 
 
-Payment {
-    payment_method: ENUM('credit_card', 'paypal', 'stripe')
-}
-Recommended Enhancement:
+ **Review** 
+  * review_id: Primary Key, UUID, Indexed 
+  * property_id: Foreign Key, references Property(property_id) 
+  * user_id: Foreign Key, references User(user_id) 
+  * rating: INTEGER, CHECK: rating >= 1 AND rating <= 5, NOT NULL 
+  * comment: TEXT, NOT NULL 
+  * created_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP 
 
--- New PaymentMethod entity
-PaymentMethod {
-    method_id: UUID (PK)
-    method_name: VARCHAR UNIQUE NOT NULL
-    description: TEXT
-    is_active: BOOLEAN DEFAULT TRUE
-    created_at: TIMESTAMP
-}
--- Updated Payment entity
-Payment {
-    payment_id: UUID (PK)
-    booking_id: UUID (FK)
-    method_id: UUID (FK) -- References PaymentMethod.method_id
-    amount: DECIMAL NOT NULL
-    payment_date: TIMESTAMP
-}
-Benefits:
+ **Message** 
+  * message_id: Primary Key, UUID, Indexed 
+  * sender_id: Foreign Key, references User(user_id) 
+  * recipient_id: Foreign Key, references User(user_id) 
+  * message_body: TEXT, NOT NULL 
+  * sent_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP 
 
-Simplifies the addition of new payment methods without requiring schema alterations.
+ **Relationships and Their Cardinalities**
+  * The relationships between entities are defined by Foreign Keys, indicating how tables are linked.
+User to Property:
 
-Enables improved tracking of payment method usage.
+Relationship: A User can be a host of multiple Property listings. Each Property is hosted by exactly one User.
 
-Allows for the temporary deactivation of payment methods.
+Cardinality: One-to-Many (1:M)
 
-3. User Role Normalization (For Complex Role Systems)
-Current State:
 
-User {
-    role: ENUM('guest', 'host', 'admin')
-}
-Recommended Enhancement:
+Description: Property.host_id references User.user_id. This indicates that a user acts as a host for properties.
 
--- New Role entity
-Role {
-    role_id: UUID (PK)
-    role_name: VARCHAR UNIQUE NOT NULL
-    description: TEXT
-    permissions: JSON -- Alternatively, a separate Permission table
-    created_at: TIMESTAMP
-}
--- Updated User entity
-User {
-    user_id: UUID (PK)
-    role_id: UUID (FK) -- References Role.role_id
-    first_name: VARCHAR NOT NULL
-    last_name: VARCHAR NOT NULL
-    email: VARCHAR UNIQUE NOT NULL
-    password_hash: VARCHAR NOT NULL
-    phone_number: VARCHAR
-    created_at: TIMESTAMP
-}
-Benefits:
+User to Booking:
 
-Provides greater flexibility and scalability for managing complex, granular permission systems.
+Relationship: A User can make multiple Bookings. Each Booking is made by exactly one User.
 
-Implementation Priority
-High Priority (Recommended):
+Cardinality: One-to-Many (1:M)
 
-Location Normalization: Offers significant benefits for data integrity and query performance.
 
-Medium Priority (Consider for Future):
+Description: Booking.user_id references User.user_id. This links a booking to the user who made it.
 
-Payment Method Normalization: Valuable for dynamic management of payment options.
+Property to Booking:
 
-User Role Normalization: Relevant primarily if complex role-based permission systems become a requirement.
+Relationship: A Property can have multiple Bookings. Each Booking is for exactly one Property.
 
-Low Priority (Current ENUM Approach Sufficient):
+Cardinality: One-to-Many (1:M)
 
-The existing ENUM implementations for roles and payment methods are generally adequate for most current use cases.
 
-Final Schema Compliance Statement
-Current Schema: 3NF Compliant
+Description: Booking.property_id references Property.property_id. This connects a booking to the specific property being reserved.
 
-The existing AirBnB database schema successfully adheres to all Third Normal Form requirements:
+Booking to Payment:
 
-1NF: All attributes contain atomic values, with unique records ensured by primary keys.
+Relationship: A Booking can have one Payment associated with it. A Payment belongs to exactly one Booking.
 
-2NF: No partial dependencies exist, due to the consistent use of single-column primary keys.
+Cardinality: One-to-One (1:1)
 
-3NF: No transitive dependencies have been identified within the current structure.
 
-Recommended Optimizations:
+Description: Payment.booking_id references Booking.booking_id. This ensures each payment is tied to a specific booking.
 
-While the schema is 3NF compliant, the suggested location normalization represents a strategic optimization opportunity rather than a correction of normalization violations. Implementing this would:
 
-Further reduce data redundancy.
 
-Improve overall data integrity.
+User to Review:
 
-Enhance query performance for location-centric operations.
+Relationship: A User can write multiple Reviews. Each Review is written by exactly one User.
 
-Provide a robust foundation for future geographic features.
+Cardinality: One-to-Many (1:M)
 
-Normalization Steps Summary
-Initial Review: Comprehensive analysis of all six entities for normalization compliance.
 
-1NF Verification: Confirmed atomicity of values and uniqueness of records.
+Description: Review.user_id references User.user_id. This links a review to the user who authored it.
 
-2NF Verification: Confirmed full functional dependencies with single primary keys.
 
-3NF Verification: Confirmed the absence of transitive dependencies in the current schema.
+Property to Review:
 
-Enhancement Identification: Pinpointed the opportunity for location normalization.
+Relationship: A Property can receive multiple Reviews. Each Review is for exactly one Property.
 
-Priority Assessment: Ranked proposed improvements based on their impact and necessity.
+Cardinality: One-to-Many (1:M)
 
-Conclusion
-The current AirBnB database schema is well-designed and fully compliant with Third Normal Form requirements. The suggested location normalization serves as an optimization, further solidifying data integrity and reducing redundancy, providing an excellent foundation for the AirBnB application's present and future needs.
 
-Testing Normalization
-To verify normalization compliance:
+Description: Review.property_id references Property.property_id. This associates a review with the property it's evaluating.
 
-SQL
 
--- Test for 1NF: Verify atomic values
-SELECT * FROM User WHERE first_name LIKE '%,%'; -- Should return no results, confirming atomicity
+User to Message (Sender):
 
--- Test for 2NF: Verify no partial dependencies (automatically satisfied with single PKs)
--- As no composite keys exist, 2NF is guaranteed.
+Relationship: A User can send multiple Messages. Each Message is sent by exactly one User.
 
--- Test for 3NF: Verify no transitive dependencies
--- A manual review of the schema confirms that no non-key attributes are dependent on other non-key attributes.
-This normalization analysis confirms that the AirBnB database schema is optimally designed for data integrity, performance, and maintainability.
->>>>>>> b14370d93070d1f3bd7562610a070d9618556cec
+Cardinality: One-to-Many (1:M)
+
+
+Description: Message.sender_id references User.user_id. This identifies the sender of a message.
+
+
+User to Message (Recipient):
+
+Relationship: A User can receive multiple Messages. Each Message is received by exactly one User.
+
+Cardinality: One-to-Many (1:M)
+
+
+Description: Message.recipient_id references User.user_id. This identifies the recipient of a message.
+
+
+
+Sources
+
