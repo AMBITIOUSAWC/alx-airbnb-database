@@ -67,66 +67,32 @@ The relationships between entities are defined by Foreign Keys, indicating how t
   * **Cardinality:** One-to-Many (1:M)
   * **Description:** Booking.user_id references User.user_id. This links a booking to the user who made it.
 
- Property to Booking:
+* **Property to Booking:**
+  * **Relationship: A Property can have multiple Bookings. Each Booking is for exactly one Property.
+  * **Cardinality: One-to-Many (1:M)
+  * ** Description: Booking.property_id references Property.property_id. This connects a booking to the specific property being reserved.
 
-Relationship: A Property can have multiple Bookings. Each Booking is for exactly one Property.
+* **Booking to Payment:**
+  * **Relationship:** A Booking can have one Payment associated with it. A Payment belongs to exactly one Booking.
+  * **Cardinality: One-to-One (1:1)
+  * **Description: Payment.booking_id references Booking.booking_id. This ensures each payment is tied to a specific booking.
 
-Cardinality: One-to-Many (1:M)
+* **User to Review:**
+  * Relationship: A User can write multiple Reviews. Each Review is written by exactly one User.
+  * **Cardinality: One-to-Many (1:M)
+  * **Description: Review.user_id references User.user_id. This links a review to the user who authored it.
 
+* **Property to Review:**
+  * **Relationship: A Property can receive multiple Reviews. Each Review is for exactly one Property.
+  * **Cardinality: One-to-Many (1:M)
+  * **Description: Review.property_id references Property.property_id. This associates a review with the property it's evaluating.
 
-Description: Booking.property_id references Property.property_id. This connects a booking to the specific property being reserved.
+* **User to Message (Sender):**
+  * **Relationship: A User can send multiple Messages. Each Message is sent by exactly one User.
+  * **Cardinality: One-to-Many (1:M)
+  * **Description: Message.sender_id references User.user_id. This identifies the sender of a message.
 
-Booking to Payment:
-
-Relationship: A Booking can have one Payment associated with it. A Payment belongs to exactly one Booking.
-
-Cardinality: One-to-One (1:1)
-
-
-Description: Payment.booking_id references Booking.booking_id. This ensures each payment is tied to a specific booking.
-
-
-
-User to Review:
-
-Relationship: A User can write multiple Reviews. Each Review is written by exactly one User.
-
-Cardinality: One-to-Many (1:M)
-
-
-Description: Review.user_id references User.user_id. This links a review to the user who authored it.
-
-
-Property to Review:
-
-Relationship: A Property can receive multiple Reviews. Each Review is for exactly one Property.
-
-Cardinality: One-to-Many (1:M)
-
-
-Description: Review.property_id references Property.property_id. This associates a review with the property it's evaluating.
-
-
-User to Message (Sender):
-
-Relationship: A User can send multiple Messages. Each Message is sent by exactly one User.
-
-Cardinality: One-to-Many (1:M)
-
-
-Description: Message.sender_id references User.user_id. This identifies the sender of a message.
-
-
-User to Message (Recipient):
-
-Relationship: A User can receive multiple Messages. Each Message is received by exactly one User.
-
-Cardinality: One-to-Many (1:M)
-
-
-Description: Message.recipient_id references User.user_id. This identifies the recipient of a message.
-
-
-
-Sources
-
+* **User to Message (Recipient):**
+  * **Relationship: A User can receive multiple Messages. Each Message is received by exactly one User.
+  * **Cardinality: One-to-Many (1:M)
+  * **Description: Message.recipient_id references User.user_id. This identifies the recipient of a message.
