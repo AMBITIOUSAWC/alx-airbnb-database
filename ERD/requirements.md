@@ -63,9 +63,9 @@ The relationships between entities are defined by Foreign Keys, indicating how t
   * **Description:** Property.host_id references User.user_id. This indicates that a user acts as a host for properties.
 
 * **User to Booking:**
- * **Relationship:** A User can make multiple Bookings. Exactly one User makes each Booking.
- * **Cardinality:** One-to-Many (1:M)
- * **Description:** Booking.user_id references User.user_id. This links a booking to the user who made it.
+  * **Relationship:** A User can make multiple Bookings. Exactly one User makes each Booking.
+  * **Cardinality:** One-to-Many (1:M)
+  * **Description:** Booking.user_id references User.user_id. This links a booking to the user who made it.
 
  Property to Booking:
 
