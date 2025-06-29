@@ -1,6 +1,3 @@
--- This is our initial, somewhat messy database schema.
--- We will normalize this in later steps!
-
 -- Table for Users
 CREATE TABLE users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
