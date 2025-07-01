@@ -89,3 +89,4 @@ User {
     created_at: TIMESTAMP
     role: ENUM (guest, host, admin), NOT NULL
 }
+![Airbnb ER Diagram](./ERD-airbnb.png) 
