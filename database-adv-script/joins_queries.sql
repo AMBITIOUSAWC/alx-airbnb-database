@@ -1,4 +1,5 @@
 
+
 -- INNER JOIN: Get all bookings and the users who made them
 SELECT b.*, u.*
 FROM bookings b
